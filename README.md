@@ -1,6 +1,7 @@
 # OpenAI API를 이용한 칸트AI
 
 해당 내용은 OpenAI에서 제공되는 API를 이용해서 철학자 칸트를 재현하는 프로젝트입니다.
+
 (본 프로젝트는 과제 제출용입니다.)
 
 # 참고한 오픈 소스 (앞으로 추가 예정)
@@ -14,7 +15,7 @@
 
 # 환경 설정
 
-1. 레포지토리를 클로닝하고, requirements를 설치해 주세요.
+1. 레포지토리를 클로닝하고, requirements의 내용들을 설치해 주세요.
 
 ```
 pip install -r requirements.txt
