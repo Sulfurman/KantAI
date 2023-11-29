@@ -1,6 +1,6 @@
 # OpenAI API를 이용한 칸트AI
 
-해당 내용은 OpenAI에서 제공되는 API를 이용해서 철학자 칸트를 재현하는 프로젝트입니다./n
+해당 내용은 OpenAI에서 제공되는 API를 이용해서 철학자 칸트를 재현하는 프로젝트입니다.
 (본 프로젝트는 과제 제출용입니다.)
 
 # 참고한 오픈 소스 (앞으로 추가 예정)
@@ -25,7 +25,18 @@ pip install -r requirements.txt
 
 # 사용법
 
-클로닝한 레포지토리 중 KantBot.py를 실행한 뒤 터미널을 통해 칸트AI에게 질문을 하세요.
+1. 클로닝한 레포지토리 중 KantBot.py를 실행한 뒤 터미널에 나온 커맨드를 다시 터미널에 작성하세요. 주의 할점 : 파일 경로에 띄어쓰기가 있으면 커맨드가 작동하지 않습니다. 띄어 쓰기가 없는 파일 경로로 설정 해주세요.
+
+```
+  Warning: to view this Streamlit app on a browser, run it with the following
+  command:
+
+    streamlit run (KantAi.py 파일 위치) [ARGUMENTS]
+```
+
+2. 칸트AI에게 원하는 pdf파일을(해당 프로젝트에는 칸트의 서적중 하나를 사용했습니다.) 웹페이지에 드래그하여 업로드 하세요.
+
+3. 로딩이 끝나면 칸트AI에게 질문을 하세요.
 
 # 작동 방식
 
@@ -53,7 +64,16 @@ pip install -r requirements.txt
         chunks = text_splitter.split_text(text)  #text를 위 splitter로 청크들로 나눔
 ```
 
-2. 청크들
+2. 청크들로 임베딩 생성
+
+AI가 청크들을 이용할 수 있게끔 각 청크들을 임베딩합니다.
+
+```
+    #임베딩 생성
+        embeddings = OpenAIEmbeddings()
+        knowledge_base = FAISS.from_texts(chunks, embeddings)
+```
+
 
 3. 질문에 대한 대답 생성
 
@@ -86,3 +106,13 @@ pip install -r requirements.txt
             st.write(final)
 
 ```
+
+# 추가예정 기능
+
+1. 디스코드 봇 활용
+
+현재는 streamlit 을 활용한 웹 안에서 구현되어 있지만 추후에 디스코드 봇에 칸트AI의 답변을 추가 할 예정입니다.
+
+2. 칸트AI의 말투, 지식 개선
+
+현재 칸트AI에 적용가능한 pdf의 숫자를 늘리고, 말투 또한 더 자연스럽게 개선할 예정입니다.
