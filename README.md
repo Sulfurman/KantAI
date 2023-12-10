@@ -11,11 +11,13 @@
 - Langchain https://github.com/langchain-ai/langchain
 
 - Langchain Ask PDF https://github.com/alejandro-ao/langchain-ask-pdf
+
+- streamlit (UI) https://github.com/streamlit/streamlit
  
 
 # 환경 설정
 
-1. 레포지토리를 클로닝하고, requirements의 내용들을 설치해 주세요.
+1. 레포지토리를 클로닝하고, requirements의 내용들을 아래 명령어로 설치해 주세요.
 
 ```
 pip install -r requirements.txt
@@ -44,9 +46,65 @@ pip install -r requirements.txt
 
 # 작동 방식
 
-현재 버전은 크게 3가지로 구성되어 있습니다.
+## 현재 버전은 크게 2가지로 구성되어 있습니다.
 
-1. pdf를 청크들로 세분화
+- UI (Stramlit 라이브러리 사용)
+- 대답 생성 함수 (OpenAI 등 라이브러리 사용)
+
+UI를 통해 사용자로부터 질문을 받고 그 질문에 대한 대답 생성 함수에서 생성된 대답을 생성한 뒤 다시 UI를 통해 출력하는 방식입니다.
+
+### 1. UI
+
+1-1. UI의 헤더를 설정
+UI 가장 처음 나오는 여러 글자들을 설정합니다.
+
+```
+    # UI 헤더 설정
+    st.set_page_config(page_title="칸트 AI")
+    st.header("칸트 AI")
+    subtitle = "칸트가 현대의 지식을 가지고 환생했습니다! \n 그에게 궁금하거나, 필요한 조언을 구해보세요!!"
+    st.subheader(subtitle)
+
+    #파일 업로드
+    pdf = st.file_uploader("질문하기 전 꼭 text.pdf를 드래그하여 업로드 해주세요!", type="pdf")
+
+```
+
+1-2. 채팅 UI
+챗봇과 사용자가 채팅을 할 수 있는 UI를 설정합니다.
+
+```
+    #대화 내용 초기화
+    if 'generated' not in st.session_state:
+        st.session_state['generated'] = []
+
+    if 'past' not in st.session_state:
+        st.session_state['past'] = []
+
+    #사용자 질문 UI
+    with st.form('form', clear_on_submit=True):
+        user_input = st.text_input('질문 ', '', key='input')
+        submitted = st.form_submit_button('Send')
+
+    #질문 내용 초기화
+    if submitted and user_input:
+        output = generate_response(user_input)
+        st.session_state.past.append(user_input)
+        st.session_state.generated.append(output)
+
+    
+    #대화 내용 역순으로 표시
+    if st.session_state['generated']:
+        for i in range(len(st.session_state['generated'])-1, -1, -1):
+            message(st.session_state['past'][i], is_user=True, key=str(i) + '_user')
+            message(st.session_state["generated"][i], key=str(i))
+```
+
+
+### 2. 대답 생성 함수
+
+
+2-1. pdf를 청크들로 세분화
 
 칸트의 데이터베이스를 학습시키기 위해 미리 준비한 칸트의 서적을 pdf를 텍스트로 추출하고 청크들로 분리해줍니다.
 
@@ -68,7 +126,7 @@ pip install -r requirements.txt
         chunks = text_splitter.split_text(text)  #text를 위 splitter로 청크들로 나눔
 ```
 
-2. 청크들로 임베딩 생성
+2-2. 청크들로 임베딩 생성
 
 AI가 청크들을 이용할 수 있게끔 각 청크들을 임베딩합니다.
 
@@ -79,18 +137,17 @@ AI가 청크들을 이용할 수 있게끔 각 청크들을 임베딩합니다.
 ```
 
 
-3. 질문에 대한 대답 생성
+2-3. 질문에 대한 대답 생성
 
 유저로부터 얻은 질문을 pdf에서 가장 유사한 내용의 청크들을 호출해 줍니다. 그 다음에 load_qa_chain() 함수를 이용해 얻어낸 청크들로 질문에 대한 대답을 생성합니다.
 
 ```
-        user_question = st.text_input("질문")
-        if user_question:
-            docs = knowledge_base.similarity_search(user_question)
+        #대답 생성    
+        docs = knowledge_base.similarity_search(user_question)
 
-            llm = OpenAI() #사용할 언어모델
-            chain = load_qa_chain(llm, chain_type="stuff")
-            response = chain.run(input_documents=docs, question=user_question)
+        llm = ChatOpenAI(model = "gpt-3.5-turbo") #사용할 언어모델
+        chain = load_qa_chain(llm, chain_type="stuff")
+        response = chain.run(input_documents=docs, question=user_question)
 ```
 
 그 다음 따로 설정한 프롬프트를 앞에서 생성한 대답에 적용시켜 실제 철학자 칸트가 쓸 수 있는 단어나 어투를 설정한뒤 최종적인 대답을 생성, 출력합니다.
@@ -113,9 +170,10 @@ AI가 청크들을 이용할 수 있게끔 각 청크들을 임베딩합니다.
 
 # 추가예정 기능
 
-1. 디스코드 봇 활용
+~~1. 디스코드 봇 활용~~
 
-현재는 streamlit 을 활용한 웹 안에서 구현되어 있지만 추후에 디스코드 봇에 칸트AI의 답변을 추가 할 예정입니다.
+~~현재는 streamlit 을 활용한 웹 안에서 구현되어 있지만 추후에 디스코드 봇에 칸트AI의 답변을 추가 할 예정입니다.~~
+(디스코드 방식은 너무 비효율적이어서 streamlit을 그대로 활용해 간단한 채팅 UI를 만들었습니다.)
 
 2. 칸트AI의 말투, 지식 개선
 
