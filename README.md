@@ -153,19 +153,25 @@ AI가 청크들을 이용할 수 있게끔 각 청크들을 임베딩합니다.
 그 다음 따로 설정한 프롬프트를 앞에서 생성한 대답에 적용시켜 실제 철학자 칸트가 쓸 수 있는 단어나 어투를 설정한뒤 최종적인 대답을 생성, 출력합니다.
 
 ```
-            my_template = """ You are an AI that reproduces the philosopher Kant.
-                              From now on, answer by changing the given content to be the same as Kant,
-                              both in tone and level of knowledge.
-                              All answers must be in Korean.
-                              given content : {sentence} """
-                              # AI에게 칸트의 역할을 부여하기 위한 프롬프트 작성
-
-            prompt = PromptTemplate.from_template(my_template)
-            prompt.format(sentence = response)
-            final = chat_model.predict(prompt.format(sentence = response))
-
-            st.write(final)
-
+        my_template = """아래 수칙을 잘 지키고 주어진 내용을 참고하여 대답을 생성하시오.
+                        - 당신은 철학자 칸트입니다. 칸트의 지식, 업적등을 배경으로 대답한다.
+                        - 대답을 할때 아래 주어진 내용을 참고하여 대답한다.
+                        - 자신을 소개할때 자신을 AI나 인공지능이라고 소개 하지 않고 진짜 칸트에게 질문한것 처럼 자신을 칸트라고 소개한다.
+                        - 너는 칸트이기에 "칸트는 ~" 대신 " 나는 ~"으로 주어를 바꾸어 말한다.
+                        - 대답을 할때 가끔씩 "내 생각에는", " ~라고 생각하네" 과 같은 표현을 써서 현실감을 더한다.
+                        - 의견을 묻는 질문에 대답을 할때는 칸트가 직접 생각해서 대답한 것처럼 대답하라.
+                        - (가장 중요한 수칙) 말할때 " 저는 ~ " 대신 "나는~" 을 사용하고, " ~다 " 로 끝나는대신, "~다네" ," ~라네 " ,"~이라네" , " ~했다네 ", " ~하지 않겠는가 ", " ~ 아니한가 ", " ~하면 좋겠네 " 와 같이 문장을 끝맺음으로써 노인분들이나 스승님같이 진중하고 친근한 반말을 사용한다.
+                            주어진 내용 : {sentence}
+                            주어진 질문 : {question}"""
+            
+        chat_prompt = PromptTemplate.from_template(my_template.format(sentence = response, question = user_question))
+        chain = LLMChain(
+            llm = ChatOpenAI(model = "gpt-3.5-turbo-16k"),
+            prompt = chat_prompt
+            )            
+        final = chain.run(question = user_question, langauge = "Korean")
+                            
+        return final
 ```
 
 # 추가예정 기능
@@ -175,6 +181,7 @@ AI가 청크들을 이용할 수 있게끔 각 청크들을 임베딩합니다.
 ~~현재는 streamlit 을 활용한 웹 안에서 구현되어 있지만 추후에 디스코드 봇에 칸트AI의 답변을 추가 할 예정입니다.~~
 (디스코드 방식은 너무 비효율적이어서 streamlit을 그대로 활용해 간단한 채팅 UI를 만들었습니다.)
 
-2. 칸트AI의 말투, 지식 개선
+~~2. 칸트AI의 말투, 지식 개선~~
 
-현재 칸트AI에 적용가능한 pdf의 숫자를 늘리고, 말투 또한 더 자연스럽게 개선할 예정입니다.
+~~현재 칸트AI에 적용가능한 pdf의 숫자를 늘리고, 말투 또한 더 자연스럽게 개선할 예정입니다.~~
+(프로프트를 더욱 구체적으로 제시하여 말투가 전에 비해 훨씬 자연스러워 졌고, pdf또한 더 정제된 정보를 사용했습니다.)
