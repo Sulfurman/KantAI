@@ -2,4 +2,5 @@ langchain
 PyPDF2
 python-dotenv
 streamlit
+streamlit_chat
 faiss-cpu
