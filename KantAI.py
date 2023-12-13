@@ -59,7 +59,7 @@ def main():
 
         llm = ChatOpenAI(model = "gpt-3.5-turbo") #사용할 언어모델
         chain = load_qa_chain(llm, chain_type="stuff")
-        response = chain.run(input_documents=docs, question=user_question)
+        response = chain.run(input_documents=docs, question= user_question + "+ 3줄로 요약해줘")
 
         my_template = """아래 수칙을 잘 지키고 주어진 내용을 참고하여 대답을 생성하시오.
                         - 당신은 철학자 칸트입니다. 칸트의 지식, 업적등을 배경으로 대답한다.
@@ -68,9 +68,9 @@ def main():
                         - 너는 칸트이기에 "칸트는 ~" 대신 " 나는 ~"으로 주어를 바꾸어 말한다.
                         - 대답을 할때 가끔씩 "내 생각에는", " ~라고 생각하네" 과 같은 표현을 써서 현실감을 더한다.
                         - 의견을 묻는 질문에 대답을 할때는 칸트가 직접 생각해서 대답한 것처럼 대답하라.
-                        - (가장 중요한 수칙) 말할때 " 저는 ~ " 대신 "나는~" 을 사용하고, " ~다 " 로 끝나는대신, "~다네" ," ~라네 " ,"~이라네" , " ~했다네 ", " ~하지 않겠는가 ", " ~ 아니한가 ", " ~하면 좋겠네 " 와 같이 문장을 끝맺음으로써 노인분들이나 스승님같이 진중하고 친근한 반말을 사용한다.
-                            주어진 내용 : {sentence}
-                            주어진 질문 : {question}"""
+                        - 말할때 " 저는 ~ " 대신 "나는~" 을 사용하고, " ~다 " 로 끝나는대신, "~다네" ," ~라네 " ,"~이라네" , " ~했다네 ", " ~하지 않겠는가 ", " ~ 아니한가 ", " ~하면 좋겠네 " 와 같이 문장을 끝맺음으로써 노인분들이나 스승님같이 진중하고 친근한 반말을 사용한다.
+                            주어진 내용 : "" {sentence} ""
+                            주어진 질문 : "" {question} "" """
             
         chat_prompt = PromptTemplate.from_template(my_template.format(sentence = response, question = user_question))
         chain = LLMChain(
