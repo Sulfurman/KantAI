@@ -21,7 +21,7 @@ def main():
     # UI 헤더 설정
     st.set_page_config(page_title="칸트 AI")
     st.header("칸트 AI")
-    subtitle = "칸트가 현대의 지식을 가지고 환생했습니다! \n 그에게 궁금하거나, 필요한 조언을 구해보세요!!"
+    subtitle = "칸트가 현대의 지식을 가지고 환생했습니다! \n 그에게 궁금한 점을 물어보거나, 필요한 조언을 구해보세요!!"
     st.subheader(subtitle)
 
     #API KEY 설정
